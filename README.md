@@ -28,11 +28,17 @@ arduino/
     ORBIT_model.h
     ORBIT_normalizer.h
     ORBIT_gesture_model.tflite
+notebooks/
+  sEMG_feature_extraction.ipynb
 data/
   squat_data.txt
   lunge_data.txt
   jump_data.txt
 ```
+
+## Notebook Workflow
+
+The notebook in `notebooks/` documents the sEMG feature extraction and model-development workflow used for the current prototype data. It is included so the data analysis process can be reviewed alongside the embedded Arduino deployment files.
 
 ## Hardware and Tools
 
