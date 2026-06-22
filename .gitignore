@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+
+# Python/Jupyter local files
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Local Arduino/editor files
+*.tmp
+*.bak
