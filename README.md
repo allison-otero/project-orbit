@@ -49,6 +49,56 @@ The notebook in `notebooks/` documents the sEMG feature extraction and model-dev
 - TensorFlow Lite Micro
 - Python-based model training workflow
 
+## How to:
+
+Downloading Repository
+
+- First, open a terminal or command prompt.
+- Clone the repository:
+  git clone <ORBIT-repository-url>
+- After the download completes, enter the project folder: cd ORBIT
+
+What the repository contains:
+- Dashboard: Displays and computer setup
+- Raspberry Pi: contains Raspberry Pi code and related files.
+- Arduino: contains Arduino firmware and microcontroller programs.
+- data processing: contains scripts used for data analysis and processing.
+- data: contains datasets and collected project data.
+- documentation: contains project documentation and reference materials.
+- notebooks: contains Jupyter notebooks used for analysis and development.
+
+The repository also includes:
+
+Depending on which part of ORBIT you are working on, you may need:
+
+- Git
+- Python
+- Jupyter Notebook or JupyterLab
+- MATLAB
+- Arduino IDE
+
+The README file should be consulted for the current software versions required by the project.
+
+Opening the project:
+
+For Python:
+
+Open Jupyter Notebook or JupyterLab.
+Navigate to the ORBIT folder.
+Open the notebooks or data processing folders as needed.
+
+For MATLAB:
+
+Open MATLAB.
+Open the ORBIT project folder.
+Add the project folders to the MATLAB path if required.
+
+For Arduino:
+
+Open the Arduino IDE.
+Open the appropriate sketch from the arduino folder.
+Verify that the correct board and COM port are selected.
+
 ## Notes
 
 This project is for research, prototyping, and educational use. It is not intended for medical diagnosis or clinical decision-making.
