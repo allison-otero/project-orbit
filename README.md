@@ -67,8 +67,6 @@ What the repository contains:
 - documentation: contains project documentation and reference materials.
 - notebooks: contains Jupyter notebooks used for analysis and development.
 
-The repository also includes:
-
 Depending on which part of ORBIT you are working on, you may need:
 
 - Git
