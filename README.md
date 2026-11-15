@@ -17,24 +17,6 @@ This is an early prototype and research foundation. The sEMG data collection and
 - Embedded TensorFlow Lite Micro inference setup for Arduino-compatible hardware.
 - Normalization constants and model header files for embedded deployment.
 
-## Repository Structure
-
-```text
-arduino/
-  data_collection/
-    Data_Collection_ORBIT.ino
-  classifier/
-    ORBIT_AI_Gesture_Model.ino
-    ORBIT_model.h
-    ORBIT_normalizer.h
-    ORBIT_gesture_model.tflite
-notebooks/
-  sEMG_feature_extraction.ipynb
-data/
-  squat_data.txt
-  lunge_data.txt
-  jump_data.txt
-```
 
 ## Notebook Workflow
 
