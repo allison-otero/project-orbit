@@ -11,11 +11,10 @@ This is an early prototype and research foundation. The sEMG data collection and
 ## Current Features
 
 - MyoWare EMG data collection from an analog input.
-- Exercise classes: squat, lunge, and jump.
+- Send collected analog signals to a Raspberry Pi.
 - Windowed signal capture at approximately 100 Hz.
-- Feature extraction using voltage mean, standard deviation, RMS, and peak-to-peak values.
-- Embedded TensorFlow Lite Micro inference setup for Arduino-compatible hardware.
-- Normalization constants and model header files for embedded deployment.
+- Feature extraction using voltage mean, standard deviation, and peak-to-peak values.
+- Calculate root-mean square (RMS) and median density frequency (MDF) values.
 
 
 ## Notebook Workflow
