@@ -27,8 +27,8 @@ The notebook in `notebooks/` documents the sEMG feature extraction and model-dev
 - MyoWare 2.0 Muscle Sensor or equivalent sEMG module
 - Surface EMG electrodes
 - Arduino IDE
-- TensorFlow Lite Micro
 - Python-based model training workflow
+- Raspberry Pi
 
 ## How to:
 
