@@ -1,4 +1,4 @@
-# ORBIT Wearable Monitoring - Early Prototype
+# Onboard Readiness & Bio-Intelligence Telemetry (ORBIT)
 
 ORBIT, or Onboard Readiness & Bio-Intelligence Telemetry, is an early-stage wearable biomedical monitoring project focused on using sensor-based data to support astronaut readiness and human performance monitoring concepts.
 
