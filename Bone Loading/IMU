@@ -85,3 +85,118 @@ void loop() {
   delay(50); // 20 Hz update rate
 }
 
+% calibrate gyroscope
+#include <bluefruit.h>
+#include <LSM6DS3.h>
+#include <Wire.h>
+
+#define TCAADDR 0x70
+
+BLEUart bleuart;
+LSM6DS3 imu1(I2C_MODE, 0x6A);
+LSM6DS3 imu2(I2C_MODE, 0x6A);
+
+// Store resting gyroscope offsets
+float gx1_off = 0, gy1_off = 0, gz1_off = 0;
+float gx2_off = 0, gy2_off = 0, gz2_off = 0;
+
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();
+}
+
+// Keep both IMUs completely stationary while this runs (~2 seconds)
+void calibrateGyros(int samples = 200) {
+  float sum_gx1 = 0, sum_gy1 = 0, sum_gz1 = 0;
+  float sum_gx2 = 0, sum_gy2 = 0, sum_gz2 = 0;
+
+  if (Bluefruit.connected()) bleuart.println("Calibrating... keep IMUs still!");
+
+  for (int i = 0; i < samples; i++) {
+    tcaselect(0);
+    sum_gx1 += imu1.readFloatGyroX();
+    sum_gy1 += imu1.readFloatGyroY();
+    sum_gz1 += imu1.readFloatGyroZ();
+
+    tcaselect(1);
+    sum_gx2 += imu2.readFloatGyroX();
+    sum_gy2 += imu2.readFloatGyroY();
+    sum_gz2 += imu2.readFloatGyroZ();
+
+    delay(10);
+  }
+
+  gx1_off = sum_gx1 / samples;
+  gy1_off = sum_gy1 / samples;
+  gz1_off = sum_gz1 / samples;
+
+  gx2_off = sum_gx2 / samples;
+  gy2_off = sum_gy2 / samples;
+  gz2_off = sum_gz2 / samples;
+
+  if (Bluefruit.connected()) bleuart.println("Calibration complete!");
+}
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+
+  tcaselect(0);
+  imu1.begin();
+  tcaselect(1);
+  imu2.begin();
+
+  Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
+  Bluefruit.begin();
+  Bluefruit.setTxPower(4);
+  Bluefruit.setName("XIAO_Mux_IMU");
+  bleuart.begin();
+
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addTxPower();
+  Bluefruit.Advertising.addService(bleuart);
+  Bluefruit.ScanResponse.addName();
+  Bluefruit.Advertising.restartOnDisconnect(true);
+  Bluefruit.Advertising.start(0);
+
+  delay(500);
+  calibrateGyros(); // Auto-calibrate at boot
+}
+
+void loop() {
+  // Check if user sent 'c' from Bluefruit Connect UART screen to recalibrate
+  if (Bluefruit.connected() && bleuart.available()) {
+    char cmd = bleuart.read();
+    if (cmd == 'c' || cmd == 'C') {
+      calibrateGyros();
+    }
+  }
+
+  tcaselect(0);
+  float ax1 = imu1.readFloatAccelX();
+  float ay1 = imu1.readFloatAccelY();
+  float az1 = imu1.readFloatAccelZ();
+  float gx1 = imu1.readFloatGyroX() - gx1_off;
+  float gy1 = imu1.readFloatGyroY() - gy1_off;
+  float gz1 = imu1.readFloatGyroZ() - gz1_off;
+
+  tcaselect(1);
+  float ax2 = imu2.readFloatAccelX();
+  float ay2 = imu2.readFloatAccelY();
+  float az2 = imu2.readFloatAccelZ();
+  float gx2 = imu2.readFloatGyroX() - gx2_off;
+  float gy2 = imu2.readFloatGyroY() - gy2_off;
+  float gz2 = imu2.readFloatGyroZ() - gz2_off;
+
+  if (Bluefruit.connected()) {
+    String data = String(ax1, 2) + "," + String(ay1, 2) + "," + String(az1, 2) + "," +
+                  String(gx1, 2) + "," + String(gy1, 2) + "," + String(gz1, 2) + "," +
+                  String(ax2, 2) + "," + String(ay2, 2) + "," + String(az2, 2) + "," +
+                  String(gx2, 2) + "," + String(gy2, 2) + "," + String(gz2, 2) + "\n";
+    bleuart.print(data);
+  }
+
+  delay(50);
+}
