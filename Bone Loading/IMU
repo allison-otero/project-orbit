@@ -1,1 +1,87 @@
+% bluetooth connection for seeed studio
+#include <bluefruit.h>
+#include <LSM6DS3.h>
+#include <Wire.h>
+
+#define TCAADDR 0x70
+
+BLEUart bleuart;
+
+// Both IMUs are verified at 0x6A on Channel 0 (Thigh) and Channel 1 (Ankle)
+LSM6DS3 imu1(I2C_MODE, 0x6A);
+LSM6DS3 imu2(I2C_MODE, 0x6A);
+
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();
+}
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+
+  // Initialize Thigh IMU on Channel 0
+  tcaselect(0);
+  if (imu1.begin() != 0) {
+    Serial.println("IMU 1 (Ch 0) failed!");
+  } else {
+    Serial.println("IMU 1 (Ch 0) ready!");
+  }
+
+  // Initialize Ankle IMU on Channel 1
+  tcaselect(1);
+  if (imu2.begin() != 0) {
+    Serial.println("IMU 2 (Ch 1) failed!");
+  } else {
+    Serial.println("IMU 2 (Ch 1) ready!");
+  }
+
+  // Initialize Bluetooth
+  Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
+  Bluefruit.begin();
+  Bluefruit.setTxPower(4);
+  Bluefruit.setName("XIAO_Mux_IMU");
+  bleuart.begin();
+
+  // Start Advertising
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addTxPower();
+  Bluefruit.Advertising.addService(bleuart);
+  Bluefruit.ScanResponse.addName();
+  Bluefruit.Advertising.restartOnDisconnect(true);
+  Bluefruit.Advertising.start(0);
+}
+
+void loop() {
+  // Always read sensors (you can also view them in Serial Monitor for testing)
+  tcaselect(0);
+  float ax1 = imu1.readFloatAccelX();
+  float ay1 = imu1.readFloatAccelY();
+  float az1 = imu1.readFloatAccelZ();
+  float gx1 = imu1.readFloatGyroX();
+  float gy1 = imu1.readFloatGyroY();
+  float gz1 = imu1.readFloatGyroZ();
+
+  tcaselect(1);
+  float ax2 = imu2.readFloatAccelX();
+  float ay2 = imu2.readFloatAccelY();
+  float az2 = imu2.readFloatAccelZ();
+  float gx2 = imu2.readFloatGyroX();
+  float gy2 = imu2.readFloatGyroY();
+  float gz2 = imu2.readFloatGyroZ();
+
+  String data = String(ax1, 2) + "," + String(ay1, 2) + "," + String(az1, 2) + "," +
+                String(gx1, 2) + "," + String(gy1, 2) + "," + String(gz1, 2) + "," +
+                String(ax2, 2) + "," + String(ay2, 2) + "," + String(az2, 2) + "," +
+                String(gx2, 2) + "," + String(gy2, 2) + "," + String(gz2, 2) + "\n";
+
+  // Send over Bluetooth when connected
+  if (Bluefruit.connected()) {
+    bleuart.print(data);
+  }
+
+  delay(50); // 20 Hz update rate
+}
 
